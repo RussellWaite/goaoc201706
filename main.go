@@ -15,6 +15,12 @@ func main() {
 		panic(err)
 	}
 	fmt.Printf("P1 answer = %d\n", p1answer)
+
+	p2answer, err := SolvePart2("./input")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("P2 answer = %d\n", p2answer)
 }
 
 type mySet map[string]struct{}
@@ -49,6 +55,28 @@ func SolvePart1(path string) (int, error) {
 	}
 }
 
+func SolvePart2(path string) (int, error) {
+	banks, err := readInput(path)
+	if err != nil {
+		return 0, err
+	}
+	iterations := 0
+	history := make(map[string]int)
+
+	for {
+		// create entry for repeat check and insert to set/map
+		key := keyFromSlice(&banks)
+		iteration, exists := history[key]
+		if exists {
+			return iterations - iteration, nil
+		}
+		history[key] = iterations
+
+		// distribute value
+		distribute(&banks)
+		iterations += 1
+	}
+}
 func distribute(values *[]int) {
 	index, largestValue := findFirstLargest(values)
 	(*values)[index] = 0
